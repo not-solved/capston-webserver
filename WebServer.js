@@ -37,13 +37,19 @@ wss.on('connection', (client) => {
             console.log("Explose Time : ", rcvMsg.ExploseTime);
             container = {
                 com : 'inject',
-                userID : rcvMsg.bombCode + toString(TimerBombCnt++),
+                userID : rcvMsg.bombCode,
                 bombCode : rcvMsg.bombCode,
                 latitude : rcvMsg.latitude,
                 longitude : rcvMsg.longitude,
                 InjectTime : rcvMsg.InjectTime,
                 ExploseTime : rcvMsg.ExploseTime
             }
+            if(rcvMsg.bombCode == 'Timer')
+                container.userID += TimerBombCnt++;
+            else if(rcvMsg.bombCode == 'Classic')
+                container.userID += ClassicBombCnt++;
+            
+            console.log(container.userID);
             client.send(JSON.stringify(container));
             container.com = null;
             BombList.push(container);
