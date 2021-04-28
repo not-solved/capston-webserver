@@ -28,8 +28,9 @@ wss.on('connection', (client) => {
     client.send('Hello from server');
     //  메시지 수신시
     client.on('message', (message) => {
-        rcvMsg = JSON.parse(message);
         
+        rcvMsg = JSON.parse(message);
+        console.log('message from client : ', rcvJson.com);
         if(rcvMsg.com == 'Inject') {            //  폭탄 설치일 경우
             console.log("Inject coord latitude : ", rcvMsg.latitude);
             console.log("Inject coord longitude : ", rcvMsg.longitude);
