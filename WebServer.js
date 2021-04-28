@@ -71,20 +71,26 @@ wss.on('connection', (client) => {
             });
         }
         else if(rcvMsg.com == 'Explose') {      //  폭탄 폭발일 경우
+            result = {
+                com : 'explose',
+                userID : rcvMsg.userID,
+                bombCode : rcvMsg.bombCode,
+                latitude : rcvMsg.latitude,
+                longitude : rcvMsg.longitude,
+                InjectTime : rcvMsg.InjectTime,
+                ExploseTime : rcvMsg.ExploseTime        
+            };
+            console.log("Explose Bomb : " + rcvJson.userID);
+            console.log("Explose latitude : " + rcvJson.latitude);
+            console.log("Explose longitude : " + rcvJson.longitude);
             //  폭발 좌표를 유저들에게 전송
             UserList.forEach((item, index, array) => {
+                item.send(JSON.stringify(result));
+                /*
                 if(item != client) {
-                    result = {
-                        com : 'explose',
-                        userID : rcvMsg.userID,
-                        bombCode : rcvMsg.bombCode,
-                        latitude : rcvMsg.latitude,
-                        longitude : rcvMsg.longitude,
-                        InjectTime : rcvMsg.InjectTime,
-                        ExploseTime : rcvMsg.ExploseTime        
-                    };
                     item.send(JSON.stringify(result));
                 }
+                */
             });
 
             //  폭발한 해당 폭탄 리스트에서 제거
