@@ -81,9 +81,9 @@ wss.on('connection', (client) => {
                 InjectTime : rcvMsg.InjectTime,
                 ExploseTime : rcvMsg.ExploseTime        
             };
-            console.log("Explose Bomb : " + rcvJson.userID);
-            console.log("Explose latitude : " + rcvJson.latitude);
-            console.log("Explose longitude : " + rcvJson.longitude);
+            console.log("Explose Bomb : " + rcvMsg.userID);
+            console.log("Explose latitude : " + rcvMsg.latitude);
+            console.log("Explose longitude : " + rcvMsg.longitude);
             //  폭발 좌표를 유저들에게 전송
             UserList.forEach((item, index, array) => {
                 item.send(JSON.stringify(result));
