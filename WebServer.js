@@ -30,7 +30,7 @@ wss.on('connection', (client) => {
     client.on('message', (message) => {
         
         rcvMsg = JSON.parse(message);
-        console.log('message from client : ', rcvJson.com);
+        console.log('message from client : ', rcvMsg.com);
         if(rcvMsg.com == 'Inject') {            //  폭탄 설치일 경우
             console.log("Inject coord latitude : ", rcvMsg.latitude);
             console.log("Inject coord longitude : ", rcvMsg.longitude);
