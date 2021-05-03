@@ -60,7 +60,7 @@ wss.on('connection', (client) => {
         else if(rcvMsg.com == 'Search') {       //  주변 탐지일 경우
             userLatitude = rcvMsg.latitude;
             userLongitude = rcvMsg.longitude;
-            console.log("UserID : ", rcvMsg.userID);
+            console.log("UserID : ", rcvMsg.installUser);
             console.log("User's Latitude : ", userLatitude);
             console.log("User's Longitude : ", userLatitude);
             BombList.forEach((item, index, array) => {
