@@ -40,7 +40,7 @@ wss.on('connection', (client) => {
                 com : 'inject',
                 bombCode : rcvMsg.bombCode,
                 bombID : rcvMsg.bombCode,
-                installUser : rcvMSg.installUser,
+                installUser : rcvMsg.installUser,
                 latitude : rcvMsg.latitude,
                 longitude : rcvMsg.longitude,
                 InjectTime : rcvMsg.InjectTime,
