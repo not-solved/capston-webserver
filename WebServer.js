@@ -107,7 +107,11 @@ wss.on('connection', (client) => {
             BombList.splice(targetIdx, 1);
         }
         else if(rcvMsg.com == 'Remove') {       //  폭텐을 제거하는 경우
-            
+            console.log("Target Bomb name : ", rcvMsg.bombID);
+            BombList.forEach((item, index, array)=> {
+                if(item.bombID == rcvMsg.bombID)
+                    console.log("Target is here!!");
+            });
         }
     });
 
