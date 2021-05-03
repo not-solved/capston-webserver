@@ -38,19 +38,20 @@ wss.on('connection', (client) => {
             console.log("Explose Time : ", rcvMsg.ExploseTime);
             container = {
                 com : 'inject',
-                userID : rcvMsg.bombCode,
                 bombCode : rcvMsg.bombCode,
+                bombID : rcvMsg.bombCode,
+                installUser : rcvMSg.installUser,
                 latitude : rcvMsg.latitude,
                 longitude : rcvMsg.longitude,
                 InjectTime : rcvMsg.InjectTime,
                 ExploseTime : rcvMsg.ExploseTime
             }
             if(rcvMsg.bombCode == 'Timer')
-                container.userID += TimerBombCnt++;
+                container.bombID += TimerBombCnt++;
             else if(rcvMsg.bombCode == 'Classic')
-                container.userID += ClassicBombCnt++;
+                container.bombID += ClassicBombCnt++;
             
-            console.log(container.userID);
+            console.log(container.bombID);
             client.send(JSON.stringify(container));
             container.com = null;
             BombList.push(container);
@@ -74,14 +75,15 @@ wss.on('connection', (client) => {
         else if(rcvMsg.com == 'Explose') {      //  폭탄 폭발일 경우
             result = {
                 com : 'explose',
-                userID : rcvMsg.userID,
                 bombCode : rcvMsg.bombCode,
+                bombID : rcvMsg.bombID,
+                installUser : rcvMsg.installUser,
                 latitude : rcvMsg.latitude,
                 longitude : rcvMsg.longitude,
                 InjectTime : rcvMsg.InjectTime,
                 ExploseTime : rcvMsg.ExploseTime        
             };
-            console.log("Explose Bomb : " + rcvMsg.userID);
+            console.log("Explose Bomb : " + rcvMsg.bombID);
             console.log("Explose latitude : " + rcvMsg.latitude);
             console.log("Explose longitude : " + rcvMsg.longitude);
             //  폭발 좌표를 유저들에게 전송
