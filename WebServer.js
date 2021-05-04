@@ -117,7 +117,7 @@ wss.on('connection', (client) => {
                     container = BombList[i];
                     container.com = "remove";
                     UserList.forEach((users, index, array) => {
-                        users.send(JSON.stringify(item));
+                        users.send(JSON.stringify(container));
                     });
                     break;
                 }
