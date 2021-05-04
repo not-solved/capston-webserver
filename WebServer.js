@@ -86,6 +86,7 @@ wss.on('connection', (client) => {
                 InjectTime : rcvMsg.InjectTime,
                 ExploseTime : rcvMsg.ExploseTime        
             };
+            console.log("================================================");
             console.log("Explose Bomb : " + rcvMsg.bombID);
             console.log("Explose latitude : " + rcvMsg.latitude);
             console.log("Explose longitude : " + rcvMsg.longitude);
@@ -111,16 +112,16 @@ wss.on('connection', (client) => {
         }
         else if(rcvMsg.com == 'Remove') {       //  폭텐을 제거하는 경우
             console.log("Target Bomb name : ", rcvMsg.bombID);
-            BombList.forEach((item, index, array)=> {
-                if(item.bombID == rcvMsg.bombID) {
-                    container = item;
+            for(i = 0; i < BombList.length; i++) {
+                if(BombList[i].bombID == rcvMsg.bombID) {
+                    container = BombList[i];
                     container.com = "remove";
-                    client.forEach((users, idx, arr) => {
+                    client.forEach((users, index, array) => {
                         users.send(JSON.stringify(item));
                     });
                     break;
                 }
-            });
+            }
         }
     });
 
