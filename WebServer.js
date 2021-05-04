@@ -116,7 +116,7 @@ wss.on('connection', (client) => {
                 if(BombList[i].bombID == rcvMsg.bombID) {
                     container = BombList[i];
                     container.com = "remove";
-                    client.forEach((users, index, array) => {
+                    UserList.forEach((users, index, array) => {
                         users.send(JSON.stringify(item));
                     });
                     break;
