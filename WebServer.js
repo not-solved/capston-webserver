@@ -66,7 +66,8 @@ wss.on('connection', (client) => {
             console.log("User's Longitude : ", userLatitude);
             console.log("left  bombs : ", BombList.length);
             BombList.forEach((item, index, array) => {
-                if(item.userID != rcvMsg.userID && findBomb(userLatitude, userLongitude, item.latitude, item.longitude)) {
+                // item.installUser != rcvMsg.installUser &&
+                if(findBomb(userLatitude, userLongitude, item.latitude, item.longitude)) {
                     console.log('Bomb detected : ' + item.latitude + ', ' + item.longitude);
                     container = item;
                     container.com = 'search';
