@@ -32,6 +32,7 @@ wss.on('connection', (client) => {
         rcvMsg = JSON.parse(message);
         console.log('message from client : ', rcvMsg.com);
         if(rcvMsg.com == 'Inject') {            //  폭탄 설치일 경우
+            console.log("================================================");
             console.log("Inject coord latitude : ", rcvMsg.latitude);
             console.log("Inject coord longitude : ", rcvMsg.longitude);
             console.log("Bomb Type : ", rcvMsg.bombCode);
@@ -60,9 +61,11 @@ wss.on('connection', (client) => {
         else if(rcvMsg.com == 'Search') {       //  주변 탐지일 경우
             userLatitude = rcvMsg.latitude;
             userLongitude = rcvMsg.longitude;
+            console.log("================================================");
             console.log("UserID : ", rcvMsg.installUser);
             console.log("User's Latitude : ", userLatitude);
             console.log("User's Longitude : ", userLatitude);
+            console.log("left  bombs : ", BombList.length);
             BombList.forEach((item, index, array) => {
                 if(item.userID != rcvMsg.userID && findBomb(userLatitude, userLongitude, item.latitude, item.longitude)) {
                     console.log('Bomb detected : ' + item.latitude + ', ' + item.longitude);
@@ -109,8 +112,14 @@ wss.on('connection', (client) => {
         else if(rcvMsg.com == 'Remove') {       //  폭텐을 제거하는 경우
             console.log("Target Bomb name : ", rcvMsg.bombID);
             BombList.forEach((item, index, array)=> {
-                if(item.bombID == rcvMsg.bombID)
-                    console.log("Target is here!!");
+                if(item.bombID == rcvMsg.bombID) {
+                    container = item;
+                    container.com = "remove";
+                    client.forEach((users, idx, arr) => {
+                        users.send(JSON.stringify(item));
+                    });
+                    break;
+                }
             });
         }
     });
