@@ -24,7 +24,6 @@ function findBomb(userLatitude, userLongitude, bombLatitude, bombLongitude) {
 wss.on('connection', (client) => {
     console.log('client connected');
     UserList.push(client);
-    client.send(client + ' connected');
     client.send('Hello from server');
     //  메시지 수신시
     client.on('message', (message) => {
@@ -76,7 +75,7 @@ wss.on('connection', (client) => {
             });
         }
         else if(rcvMsg.com == 'Explose') {      //  폭탄 폭발일 경우
-            result = {
+            container = {
                 com : 'explose',
                 bombCode : rcvMsg.bombCode,
                 bombID : rcvMsg.bombID,
@@ -84,23 +83,18 @@ wss.on('connection', (client) => {
                 latitude : rcvMsg.latitude,
                 longitude : rcvMsg.longitude,
                 InjectTime : rcvMsg.InjectTime,
-                ExploseTime : rcvMsg.ExploseTime        
+                ExploseTime : rcvMsg.ExploseTime
             };
             console.log("================================================");
             console.log("Explose Bomb : " + rcvMsg.bombID);
             console.log("Explose latitude : " + rcvMsg.latitude);
             console.log("Explose longitude : " + rcvMsg.longitude);
             //  폭발 좌표를 유저들에게 전송
-            UserList.forEach((item, index, array) => {
-                item.send(JSON.stringify(result));
-                /*
-                if(item != client) {
-                    item.send(JSON.stringify(result));
-                }
-                */
+            UserList.forEach((user, index, array) => {
+                user.send(JSON.stringify(container));
             });
 
-            //  폭발한 해당 폭탄 리스트에서 제거
+            //  폭발한 폭탄 리스트에서 제거
             targetIdx = 0;
             for(i = 0; i < BombList.length; i++) {
                 if(BombList[i] == rcvMsg.bombCode) {
@@ -111,6 +105,7 @@ wss.on('connection', (client) => {
             BombList.splice(targetIdx, 1);
         }
         else if(rcvMsg.com == 'Remove') {       //  폭텐을 제거하는 경우
+            console.log("================================================");
             console.log("Target Bomb name : ", rcvMsg.bombID);
             for(i = 0; i < BombList.length; i++) {
                 if(BombList[i].bombID == rcvMsg.bombID) {
@@ -122,6 +117,15 @@ wss.on('connection', (client) => {
                     break;
                 }
             }
+            //  제거한 폭탄 리스트에서 제거
+            targetIdx = 0;
+            for(i = 0; i < BombList.length; i++) {
+                if(BombList[i] == rcvMsg.bombCode) {
+                    targetIdx = i;
+                    break;
+                }
+            }
+            BombList.splice(targetIdx, 1);            
         }
     });
 
