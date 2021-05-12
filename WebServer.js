@@ -28,7 +28,13 @@ wss.on('connection', (client) => {
     UserCount++;
     container = {
         com : "Connect",
-        installUser : "Client_" + UserCount
+        bombCode : "",
+        bombID : "",
+        installUser : "Client_" + UserCount,
+        latitude : 0,
+        longitude : 0,
+        InjectTime : 0,
+        ExploseTime : 0
     }
     client.send(JSON.stringify(container));
     
