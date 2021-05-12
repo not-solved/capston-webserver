@@ -27,8 +27,8 @@ wss.on('connection', (client) => {
     UserList.push(client);
     UserCount++;
     container = {
-        com = "Connect",
-        installUser = "Client_" + UserCount
+        com : "Connect",
+        installUser : "Client_" + UserCount
     }
     client.send(JSON.stringify(container));
     
