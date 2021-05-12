@@ -26,17 +26,17 @@ wss.on('connection', (client) => {
     console.log('client connected');
     UserList.push(client);
 
-    UserCount++;
     container = {
         com : "Connect",
         bombCode : "",
         bombID : "",
-        installUser : "Client" + UserCount,
+        installUser : "Client",
         latitude : 0,
         longitude : 0,
-        InjectTime : 0,
-        ExploseTime : 0
+        InjectTime : "",
+        ExploseTime : ""
     }
+    container.installUser += UserCount++;
     client.send(JSON.stringify(container));
     
     //  메시지 수신시
