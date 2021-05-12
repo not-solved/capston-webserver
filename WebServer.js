@@ -36,6 +36,7 @@ wss.on('connection', (client) => {
         InjectTime : 0,
         ExploseTime : 0
     }
+    console.log(container.installUser);
     client.send(JSON.stringify(container));
     
     client.send('Hello from server');
