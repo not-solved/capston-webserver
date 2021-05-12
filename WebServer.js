@@ -25,6 +25,7 @@ function findBomb(userLatitude, userLongitude, bombLatitude, bombLongitude) {
 wss.on('connection', (client) => {
     console.log('client connected');
     UserList.push(client);
+
     UserCount++;
     container = {
         com : "Connect",
@@ -36,10 +37,8 @@ wss.on('connection', (client) => {
         InjectTime : 0,
         ExploseTime : 0
     }
-    console.log(container.installUser);
     client.send(JSON.stringify(container));
     
-    client.send('Hello from server');
     //  메시지 수신시
     client.on('message', (message) => {
         
@@ -47,6 +46,7 @@ wss.on('connection', (client) => {
         console.log('message from client : ', rcvMsg.com);
         if(rcvMsg.com == 'Inject') {            //  폭탄 설치일 경우
             console.log("================================================");
+            console.log("Inject user : ", rcvMsg.installUser);
             console.log("Inject coord latitude : ", rcvMsg.latitude);
             console.log("Inject coord longitude : ", rcvMsg.longitude);
             console.log("Bomb Type : ", rcvMsg.bombCode);
@@ -103,6 +103,7 @@ wss.on('connection', (client) => {
             };
             console.log("================================================");
             console.log("Explose Bomb : " + rcvMsg.bombID);
+            console.log("Bomb' owner : ", rcvMsg.installUser);
             console.log("Explose latitude : " + rcvMsg.latitude);
             console.log("Explose longitude : " + rcvMsg.longitude);
             //  폭발 좌표를 유저들에게 전송
@@ -122,6 +123,7 @@ wss.on('connection', (client) => {
         }
         else if(rcvMsg.com == 'Remove') {       //  폭텐을 제거하는 경우
             console.log("================================================");
+            console.log("User : ", rcvMsg.installUser);
             console.log("Target Bomb name : ", rcvMsg.bombID);
             for(i = 0; i < BombList.length; i++) {
                 if(BombList[i].bombID == rcvMsg.bombID) {
