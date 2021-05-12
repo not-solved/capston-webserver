@@ -4,6 +4,7 @@ var wss = new wsServer.Server({port: 6010});
 var UserList = [];
 var BombList = [];
 var container = {};
+UserCount = 0;
 TimerBombCnt = 0;
 ClassicBombCnt = 0;
 
@@ -24,6 +25,13 @@ function findBomb(userLatitude, userLongitude, bombLatitude, bombLongitude) {
 wss.on('connection', (client) => {
     console.log('client connected');
     UserList.push(client);
+    UserCount++;
+    container = {
+        com = "Connect",
+        installUser = "Client_" + UserCount
+    }
+    client.send(JSON.stringify(container));
+    
     client.send('Hello from server');
     //  메시지 수신시
     client.on('message', (message) => {
