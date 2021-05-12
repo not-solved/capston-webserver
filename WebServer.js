@@ -31,7 +31,7 @@ wss.on('connection', (client) => {
         com : "Connect",
         bombCode : "",
         bombID : "",
-        installUser : "Client_" + UserCount,
+        installUser : "Client" + UserCount,
         latitude : 0,
         longitude : 0,
         InjectTime : 0,
