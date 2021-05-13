@@ -23,9 +23,8 @@ function findBomb(userLatitude, userLongitude, bombLatitude, bombLongitude) {
 
 //  클라이언트 연결
 wss.on('connection', (client) => {
-    console.log('client connected');
+    
     UserList.push(client);
-
     container = {
         com : "Connect",
         bombCode : "",
@@ -38,7 +37,7 @@ wss.on('connection', (client) => {
     }
     container.installUser += UserCount++;
     client.send(JSON.stringify(container));
-    
+    console.log(container.installUser, ' connected');
     //  메시지 수신시
     client.on('message', (message) => {
         
