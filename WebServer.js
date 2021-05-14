@@ -81,12 +81,18 @@ wss.on('connection', (client) => {
             console.log("left  bombs : ", BombList.length);
             BombList.forEach((item, index, array) => {
                 // item.installUser != rcvMsg.installUser &&
+                console.log('Bomb detected : ' + item.latitude + ', ' + item.longitude);
+                container = item;
+                container.com = 'search';
+                client.send(JSON.stringify(container));
+                /*
                 if(findBomb(userLatitude, userLongitude, item.latitude, item.longitude)) {
                     console.log('Bomb detected : ' + item.latitude + ', ' + item.longitude);
                     container = item;
                     container.com = 'search';
                     client.send(JSON.stringify(container));
                 }
+                */
             });
         }
         else if(rcvMsg.com == 'Explose') {      //  폭탄 폭발일 경우
