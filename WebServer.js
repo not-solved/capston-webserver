@@ -11,15 +11,9 @@ ClassicBombCnt = 0;
 const latitudeRate = 1112000;       //  latitude 1 차이 : 111.20km 차이 (1112000m)
 const longitudeRate = 882700;       //  longitude 1 차이 : 88.27km 차이 (882700m)
 
-//  폭탄 탐색 연산 수행 시 
-function findBomb(userLatitude, userLongitude, bombLatitude, bombLongitude) {
-    if(Math.sqrt(Math.pow((userLatitude - bombLatitude)*latitudeRate, 2)
-                + Math.pow((userLongitude - bombLongitude)*longitudeRate, 2)) <= 200)
-        return true;
-    else
-        return false;
+function calculateDistance(userLatitude, userLongitude, bombLatitude, bombLongitude) {
+    return Math.sqrt((Math.pow(userLatitude - bombLatitude)*latitudeRate, 2) + Math.pow((userLongitude - bombLongitude)*longitudeRate, 2));
 }
-
 
 //  클라이언트 연결
 wss.on('connection', (client) => {
@@ -81,7 +75,8 @@ wss.on('connection', (client) => {
             console.log("left  bombs : ", BombList.length);
             BombList.forEach((item, index, array) => {
                 // item.installUser != rcvMsg.installUser &&
-                console.log('Bomb detected : ' + item.latitude + ', ' + item.longitude);
+                dist = calculateDistance(userLatitude, userLongitude, item.latitude, item.longitude);
+                console.log('Bomb detected : ' + dist);
                 container = item;
                 container.com = 'search';
                 client.send(JSON.stringify(container));
