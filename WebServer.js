@@ -74,20 +74,13 @@ wss.on('connection', (client) => {
             console.log("User's Longitude : ", userLatitude);
             console.log("left  bombs : ", BombList.length);
             BombList.forEach((item, index, array) => {
-                // item.installUser != rcvMsg.installUser &&
-                dist = calculateDistance(userLatitude, userLongitude, item.latitude, item.longitude);
-                console.log('Bomb detected : ' + dist);
-                container = item;
-                container.com = 'search';
-                client.send(JSON.stringify(container));
-                /*
-                if(findBomb(userLatitude, userLongitude, item.latitude, item.longitude)) {
-                    console.log('Bomb detected : ' + item.latitude + ', ' + item.longitude);
+                if(item.installUser != rcvMsg.installUser) {
+                    dist = calculateDistance(userLatitude, userLongitude, item.latitude, item.longitude);
+                    console.log('Bomb detected : ' + dist);
                     container = item;
                     container.com = 'search';
                     client.send(JSON.stringify(container));
                 }
-                */
             });
         }
         else if(rcvMsg.com == 'Explose') {      //  폭탄 폭발일 경우
@@ -122,9 +115,9 @@ wss.on('connection', (client) => {
             BombList.splice(targetIdx, 1);
         }
         else if(rcvMsg.com == 'Remove') {       //  폭텐을 제거하는 경우
+            removeComplete = false;
             console.log("================================================");
             console.log("User : ", rcvMsg.installUser);
-            console.log("Target Bomb name : ", rcvMsg.bombID);
             for(i = 0; i < BombList.length; i++) {
                 if(BombList[i].bombID == rcvMsg.bombID) {
                     container = BombList[i];
@@ -132,9 +125,14 @@ wss.on('connection', (client) => {
                     UserList.forEach((users, index, array) => {
                         users.send(JSON.stringify(container));
                     });
+                    console.log("Target Bomb name : ", rcvMsg.bombID);
+                    removeComplete = true;
                     break;
                 }
             }
+
+            if(!removeComplete)
+                console.log("No such bomb remained");
             //  제거한 폭탄 리스트에서 제거
             targetIdx = 0;
             for(i = 0; i < BombList.length; i++) {
