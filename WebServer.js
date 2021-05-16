@@ -5,8 +5,9 @@ var UserList = [];
 var BombList = [];
 var container = {};
 UserCount = 0;
-TimerBombCnt = 0;
-ClassicBombCnt = 0;
+SmallBombCnt = 0;
+MediumBombCnt = 0;
+LargeBombCnt = 0;
 
 const latitudeRate = 1112000;       //  latitude 1 차이 : 111.20km 차이 (1112000m)
 const longitudeRate = 882700;       //  longitude 1 차이 : 88.27km 차이 (882700m)
@@ -30,6 +31,7 @@ wss.on('connection', (client) => {
     }
     container.installUser += UserCount++;
     client.send(JSON.stringify(container));
+    
     clientName = container.installUser;
     console.log(clientName, ' connected');
     //  메시지 수신시
@@ -54,10 +56,12 @@ wss.on('connection', (client) => {
                 InjectTime : rcvMsg.InjectTime,
                 ExploseTime : rcvMsg.ExploseTime
             }
-            if(rcvMsg.bombCode == 'Timer')
-                container.bombID += TimerBombCnt++;
-            else if(rcvMsg.bombCode == 'Classic')
-                container.bombID += ClassicBombCnt++;
+            if(rcvMsg.bombCode == 'Small')
+                container.bombID += SmallBombCnt++;
+            else if(rcvMsg.bombCode == 'Medium')
+                container.bombID += MediumBombCnt++;
+            else
+                container.bombID += LargeBombCnt++;
             
             console.log(container.bombID);
             client.send(JSON.stringify(container));
@@ -73,8 +77,10 @@ wss.on('connection', (client) => {
             console.log("User's Latitude : ", userLatitude);
             console.log("User's Longitude : ", userLatitude);
             console.log("left  bombs : ", BombList.length);
+            isDetected = false;
             BombList.forEach((item, index, array) => {
                 if(item.installUser != rcvMsg.installUser) {
+                    isDetected = true;
                     dist = calculateDistance(userLatitude, userLongitude, item.latitude, item.longitude);
                     console.log('Bomb detected : ' + dist);
                     container = item;
@@ -82,6 +88,11 @@ wss.on('connection', (client) => {
                     client.send(JSON.stringify(container));
                 }
             });
+            if(!isDetected) {
+                container.com = 'search';
+                container.bombCode = 'NoBomb';
+                client.send(JSON.stringify(container));
+            }
         }
         else if(rcvMsg.com == 'Explose') {      //  폭탄 폭발일 경우
             container = {
