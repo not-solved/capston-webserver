@@ -11,6 +11,7 @@ LargeBombCnt = 0;
 
 const latitudeRate = 1112000;       //  latitude 1 차이 : 111.20km 차이 (1112000m)
 const longitudeRate = 882700;       //  longitude 1 차이 : 88.27km 차이 (882700m)
+var isDetected = false;
 
 function calculateDistance(userLatitude, userLongitude, bombLatitude, bombLongitude) {
     return Math.sqrt((Math.pow(userLatitude - bombLatitude)*latitudeRate, 2) + Math.pow((userLongitude - bombLongitude)*longitudeRate, 2));
@@ -77,6 +78,7 @@ wss.on('connection', (client) => {
             console.log("User's Latitude : ", userLatitude);
             console.log("User's Longitude : ", userLatitude);
             console.log("left  bombs : ", BombList.length);
+
             isDetected = false;
             BombList.forEach((item, index, array) => {
                 if(item.installUser != rcvMsg.installUser) {
@@ -88,6 +90,7 @@ wss.on('connection', (client) => {
                     client.send(JSON.stringify(container));
                 }
             });
+
             if(!isDetected) {
                 container.com = 'search';
                 container.bombCode = 'NoBomb';
