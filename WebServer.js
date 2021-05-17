@@ -85,6 +85,7 @@ wss.on('connection', (client) => {
                     isDetected = true;
                     dist = calculateDistance(userLatitude, userLongitude, item.latitude, item.longitude);
                     console.log('Bomb detected : ' + dist);
+                    console.log('Bomb\'s owner : ' + item.installUser);
                     container = item;
                     container.com = 'search';
                     client.send(JSON.stringify(container));
