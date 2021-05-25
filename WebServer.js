@@ -9,9 +9,10 @@ SmallBombCnt = 0;
 MediumBombCnt = 0;
 LargeBombCnt = 0;
 
-const latitudeRate = 1112000;       //  latitude 1 차이 : 111.20km 차이 (1112000m)
-const longitudeRate = 882700;       //  longitude 1 차이 : 88.27km 차이 (882700m)
+const latitudeRate = 111200;       //  latitude 1 차이 : 111.20km 차이 (1112000m)
+const longitudeRate = 88270;       //  longitude 1 차이 : 88.27km 차이 (882700m)
 var isDetected = false;
+var isSended = false;
 
 function calculateDistance(userLatitude, userLongitude, bombLatitude, bombLongitude) {
     return Math.sqrt((Math.pow(userLatitude - bombLatitude)*latitudeRate, 2) + Math.pow((userLongitude - bombLongitude)*longitudeRate, 2));
@@ -47,28 +48,41 @@ wss.on('connection', (client) => {
             console.log("Inject coord longitude : ", rcvMsg.longitude);
             console.log("Bomb Type : ", rcvMsg.bombCode);
             console.log("Explose Time : ", rcvMsg.ExploseTime);
-            container = {
-                com : 'inject',
-                bombCode : rcvMsg.bombCode,
-                bombID : rcvMsg.bombCode,
-                installUser : rcvMsg.installUser,
-                latitude : rcvMsg.latitude,
-                longitude : rcvMsg.longitude,
-                InjectTime : rcvMsg.InjectTime,
-                ExploseTime : rcvMsg.ExploseTime
+
+            isSended = false;
+            BombList.forEach((item, index, array) => {
+                if(calculateDistance(rcvMsg.latitude, rcvMsg.longitude, item.latitude, item.longitude) <= 10) {
+                    container.com = 'inject';
+                    container.bombCode = 'Failed';
+                    container.installUser = calculateDistance(rcvMsg.latitude, rcvMsg.longitude, item.latitude, item.longitude).toString();
+                    client.send(container);
+                    isSended = true;
+                }
+            })
+            if(!isSended) {
+                container = {
+                    com : 'inject',
+                    bombCode : rcvMsg.bombCode,
+                    bombID : rcvMsg.bombCode,
+                    installUser : rcvMsg.installUser,
+                    latitude : rcvMsg.latitude,
+                    longitude : rcvMsg.longitude,
+                    InjectTime : rcvMsg.InjectTime,
+                    ExploseTime : rcvMsg.ExploseTime
+                }
+                if(rcvMsg.bombCode == 'Small')
+                    container.bombID += SmallBombCnt++;
+                else if(rcvMsg.bombCode == 'Medium')
+                    container.bombID += MediumBombCnt++;
+                else
+                    container.bombID += LargeBombCnt++;
+                
+                console.log(container.bombID);
+                client.send(JSON.stringify(container));
+                container.com = null;
+                BombList.push(container);
+                console.log("Left Bombs : " + BombList.length);    
             }
-            if(rcvMsg.bombCode == 'Small')
-                container.bombID += SmallBombCnt++;
-            else if(rcvMsg.bombCode == 'Medium')
-                container.bombID += MediumBombCnt++;
-            else
-                container.bombID += LargeBombCnt++;
-            
-            console.log(container.bombID);
-            client.send(JSON.stringify(container));
-            container.com = null;
-            BombList.push(container);
-            console.log("Left Bombs : " + BombList.length);
         } 
         else if(rcvMsg.com == 'Search') {       //  주변 탐지일 경우
             userLatitude = rcvMsg.latitude;
@@ -81,7 +95,8 @@ wss.on('connection', (client) => {
 
             isDetected = false;
             BombList.forEach((item, index, array) => {
-                if(item.installUser != rcvMsg.installUser) {
+                if( calculateDistance(userLatitude, userLongitude, item.latitude, item.longitude) <= 50
+                    && item.installUser != rcvMsg.installUser) {
                     isDetected = true;
                     dist = calculateDistance(userLatitude, userLongitude, item.latitude, item.longitude);
                     console.log('Bomb detected : ' + dist);
