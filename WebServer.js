@@ -54,7 +54,7 @@ wss.on('connection', (client) => {
                 if(calculateDistance(rcvMsg.latitude, rcvMsg.longitude, item.latitude, item.longitude) <= 10) {
                     container.com = 'inject';
                     container.bombCode = 'Failed';
-                    container.installUser = calculateDistance(rcvMsg.latitude, rcvMsg.longitude, item.latitude, item.longitude).toString();
+                    // container.installUser = calculateDistance(rcvMsg.latitude, rcvMsg.longitude, item.latitude, item.longitude).toString();
                     client.send(container);
                     isSended = true;
                 }
