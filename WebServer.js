@@ -79,7 +79,6 @@ wss.on('connection', (client) => {
                 
                 console.log(container.bombID);
                 client.send(JSON.stringify(container));
-                container.com = null;
                 BombList.push(container);
                 console.log("Left Bombs : " + BombList.length);    
             }
@@ -90,7 +89,7 @@ wss.on('connection', (client) => {
             console.log("================================================");
             console.log("UserID : ", rcvMsg.installUser);
             console.log("User's Latitude : ", userLatitude);
-            console.log("User's Longitude : ", userLatitude);
+            console.log("User's Longitude : ", userLongitude);
             console.log("left  bombs : ", BombList.length);
 
             isDetected = false;
