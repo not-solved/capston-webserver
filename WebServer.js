@@ -35,7 +35,7 @@ wss.on('connection', (client) => {
     UserList.push([ client, container.installUser ]);
     for(a = 0; a < UserList.length; a++) {
         if(UserList[a][0] == client) {
-            console.log('Find User : ' + UserList[a][1]);
+            console.log('Hello ' + UserList[a][1]);
         }
     }
     //  메시지 수신시
@@ -131,7 +131,7 @@ wss.on('connection', (client) => {
             console.log("Explose longitude : " + rcvMsg.longitude);
             //  폭발 좌표를 유저들에게 전송
             UserList.forEach((user, index, array) => {
-                user.send(JSON.stringify(container));
+                user[0].send(JSON.stringify(container));
             });
 
             //  폭발한 폭탄 리스트에서 제거
@@ -176,13 +176,8 @@ wss.on('connection', (client) => {
         else if(rcvMsg.com == 'Attacked') {
             for(i = 0; i < UserList.length; i++) {
                 if(UserList[i][1] == rcvMsg.installUser) {
-                    container = BombList[i];
-                    container.com = "remove";
-                    UserList.forEach((users, index, array) => {
-                        users.send(JSON.stringify(container));
-                    });
-                    console.log("Target Bomb name : ", rcvMsg.bombID);
-                    removeComplete = true;
+                    container.com = "attack";
+                    UserList[i][0].send(JSON.stringify(container));
                     break;
                 }
             }
@@ -193,7 +188,7 @@ wss.on('connection', (client) => {
     client.on('close', () => {
         targetIdx = 0;
         for(i = 0; i < UserList.length; i++) {
-            if(UserList[i] == client) {
+            if(UserList[i][0] == client) {
                 targetIdx = i;
                 break;
             }
