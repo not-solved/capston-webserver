@@ -20,7 +20,6 @@ function calculateDistance(userLatitude, userLongitude, bombLatitude, bombLongit
 
 //  클라이언트 연결
 wss.on('connection', (client) => {
-    UserList.push(client);
     container = {
         com : "Connect",
         bombCode : "",
@@ -33,9 +32,9 @@ wss.on('connection', (client) => {
     }
     container.installUser += UserCount++;
     client.send(JSON.stringify(container));
-    
-    clientName = container.installUser;
-    console.log(clientName, ' connected');
+    UserList.push([ client, container.installUser ]);
+    console.log(UserList[0][1], ' + ', UserList[0][0]);
+    console.log(container.installUser, ' connected');
     //  메시지 수신시
     client.on('message', (message) => {
         
@@ -170,6 +169,20 @@ wss.on('connection', (client) => {
                 }
             }
             BombList.splice(targetIdx, 1);            
+        }
+        else if(rcvMsg.com == 'Attacked') {
+            for(i = 0; i < UserList.length; i++) {
+                if(UserList[i][1] == rcvMsg.installUser) {
+                    container = BombList[i];
+                    container.com = "remove";
+                    UserList.forEach((users, index, array) => {
+                        users.send(JSON.stringify(container));
+                    });
+                    console.log("Target Bomb name : ", rcvMsg.bombID);
+                    removeComplete = true;
+                    break;
+                }
+            }
         }
     });
 
