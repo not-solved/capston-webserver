@@ -33,11 +33,8 @@ wss.on('connection', (client) => {
     container.installUser += UserCount++;
     client.send(JSON.stringify(container));
     UserList.push([ client, container.installUser ]);
-    for(a = 0; a < UserList.length; a++) {
-        if(UserList[a][0] == client) {
-            console.log('Hello ' + UserList[a][1]);
-        }
-    }
+    console.log('Hello ' + container.installUser);
+
     //  메시지 수신시
     client.on('message', (message) => {
         
