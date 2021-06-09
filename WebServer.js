@@ -39,9 +39,9 @@ wss.on('connection', (client) => {
     client.on('message', (message) => {
         
         rcvMsg = JSON.parse(message);
+        console.log("================================================");
         console.log('message from client : ', rcvMsg.com);
         if(rcvMsg.com == 'Inject') {            //  폭탄 설치일 경우
-            console.log("================================================");
             console.log("Inject user : ", rcvMsg.installUser);
             console.log("Inject coord latitude : ", rcvMsg.latitude);
             console.log("Inject coord longitude : ", rcvMsg.longitude);
