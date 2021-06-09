@@ -150,7 +150,7 @@ wss.on('connection', (client) => {
                     container = BombList[i];
                     container.com = "remove";
                     UserList.forEach((users, index, array) => {
-                        users.send(JSON.stringify(container));
+                        users[0].send(JSON.stringify(container));
                     });
                     console.log("Target Bomb name : ", rcvMsg.bombID);
                     removeComplete = true;
