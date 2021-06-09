@@ -187,14 +187,16 @@ wss.on('connection', (client) => {
     //  클라이언트 연결 해제 ==> 리스트에서 클라이언트 제거
     client.on('close', () => {
         targetIdx = 0;
+        ClientName = '';
         for(i = 0; i < UserList.length; i++) {
             if(UserList[i][0] == client) {
                 targetIdx = i;
+                ClientName = UserList[i][1];
                 break;
             }
         }
         UserList.splice(targetIdx, 1);
-        console.log(clientName + ' disconnected');
+        console.log(ClientName + ' disconnected');
     });
 });
 
