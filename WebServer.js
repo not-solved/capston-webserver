@@ -42,6 +42,7 @@ wss.on('connection', (client) => {
         console.log("================================================");
         console.log('message from client : ', rcvMsg.com);
         if(rcvMsg.com == 'Inject') {            //  폭탄 설치일 경우
+            console.log("================================================");
             console.log("Inject user : ", rcvMsg.installUser);
             console.log("Inject coord latitude : ", rcvMsg.latitude);
             console.log("Inject coord longitude : ", rcvMsg.longitude);
@@ -171,6 +172,8 @@ wss.on('connection', (client) => {
             BombList.splice(targetIdx, 1);            
         }
         else if(rcvMsg.com == 'Attacked') {
+            console.log("================================================");
+            console.log("Someone is attacked");
             for(i = 0; i < UserList.length; i++) {
                 if(UserList[i][1] == rcvMsg.installUser) {
                     container.com = "attack";
