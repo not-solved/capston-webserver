@@ -20,25 +20,29 @@ function calculateDistance(userLatitude, userLongitude, bombLatitude, bombLongit
 
 //  클라이언트 연결
 wss.on('connection', (client) => {
-    container = {
-        com : "Connect",
-        bombCode : "",
-        bombID : "",
-        installUser : "Client",
-        latitude : 0,
-        longitude : 0,
-        InjectTime : "",
-        ExploseTime : ""
-    }
-    container.installUser += UserCount++;
-    client.send(JSON.stringify(container));
-    UserList.push([ client, container.installUser ]);
-    console.log('Hello ' + container.installUser);
+    console.log("Connection detected");
 
     //  메시지 수신시
     client.on('message', (message) => {
-        
         rcvMsg = JSON.parse(message);
+        if(rcvMsg.com == "Initial Connection") {
+            container = {
+                com : "Connect",
+                bombCode : "",
+                bombID : "",
+                installUser : rcvMsg.installUser,
+                latitude : 0,
+                longitude : 0,
+                InjectTime : "",
+                ExploseTime : ""
+            }
+            UserCount++;
+            client.send(JSON.stringify(container));
+            UserList.push([ client, container.installUser ]);    
+            console.log('Hello ' + container.installUser);    
+            return;
+        }
+        
         console.log("================================================");
         console.log('message from client : ', rcvMsg.com);
         if(rcvMsg.com == 'Inject') {            //  폭탄 설치일 경우
@@ -142,7 +146,7 @@ wss.on('connection', (client) => {
             }
             BombList.splice(targetIdx, 1);
         }
-        else if(rcvMsg.com == 'Remove') {       //  폭텐을 제거하는 경우
+        else if(rcvMsg.com == 'Remove') {       //  폭탄을 제거하는 경우
             removeComplete = false;
             console.log("================================================");
             console.log("User : ", rcvMsg.installUser);
@@ -171,7 +175,7 @@ wss.on('connection', (client) => {
             }
             BombList.splice(targetIdx, 1);            
         }
-        else if(rcvMsg.com == 'Attacked') {
+        else if(rcvMsg.com == 'Attacked') {     //  누군가 폭발에 휩쓸리는 경우
             console.log("================================================");
             console.log("Someone is attacked");
             for(i = 0; i < UserList.length; i++) {
