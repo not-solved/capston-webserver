@@ -25,7 +25,7 @@ wss.on('connection', (client) => {
     //  메시지 수신시
     client.on('message', (message) => {
         rcvMsg = JSON.parse(message);
-        if(rcvMsg.com == "Initial Connection") {
+        if(rcvMsg.com == "InitialConnection") {
             container = {
                 com : "Connect",
                 bombCode : "",
