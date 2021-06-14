@@ -199,6 +199,7 @@ wss.on('connection', (client) => {
                 break;
             }
         }
+        UserList.splice(targetIdx, 1);
 
         for(i = 0; i < BombList.length; i++) {
             if(BombList[i].installUser == ClientName) {
