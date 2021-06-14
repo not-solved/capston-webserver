@@ -211,6 +211,7 @@ wss.on('connection', (client) => {
             }
         }
 
+        /*
         //  제거한 폭탄 리스트에서 제거
         for(i = 0; i < BombList.length; i++) {
             if(BombList[i].installUser == ClientName) {
@@ -219,6 +220,7 @@ wss.on('connection', (client) => {
                 break;
             }
         }
+        */
         console.log(ClientName + ' disconnected');
     });
 });
