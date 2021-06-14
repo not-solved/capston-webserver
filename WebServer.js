@@ -199,7 +199,25 @@ wss.on('connection', (client) => {
                 break;
             }
         }
-        UserList.splice(targetIdx, 1);
+
+        for(i = 0; i < BombList.length; i++) {
+            if(BombList[i].installUser == ClientName) {
+                container = BombList[i];
+                container.com = "SessionOut";
+                UserList.forEach((users, index, array) => {
+                    users[0].send(JSON.stringify(container));
+                });
+            }
+        }
+
+        //  제거한 폭탄 리스트에서 제거
+        for(i = 0; i < BombList.length; i++) {
+            if(BombList[i].installUser == ClientName) {
+                BombList.splice(i, 1);
+                i--;
+                break;
+            }
+        }
         console.log(ClientName + ' disconnected');
     });
 });
