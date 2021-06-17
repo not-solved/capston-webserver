@@ -41,7 +41,7 @@ wss.on('connection', (client) => {
             UserList.forEach((users, index, array) => {
                 if(users[1] == rcvMsg.installUser) {
                     container.com = "NameDuplicated";
-                    client.send(JSON.stringify(conatiner));
+                    client.send(JSON.stringify(container));
                     return;
                 }
             });
