@@ -39,25 +39,27 @@ wss.on('connection', (client) => {
         rcvMsg = JSON.parse(message);
         if(rcvMsg.com == "InitialConnection") {
             //  이름 중복 검사  
+            isDuplicated = false;
             NameList.forEach((users, index, array) => {
                 if(users == rcvMsg.installUser) {
                     container.com = "NameDuplicated";
                     client.send(JSON.stringify(container));
                     console.log("Name Duplicated");
-                    return;
+                    isDuplicated = true;
                 }
             });
 
             //  중복검사 통과 시 게임 화면으로 연결
-            container.com = "Connect";
-            container.installUser = rcvMsg.installUser;
-            
-            client.send(JSON.stringify(container));
-            UserList.push(client);    
-            NameList.push(rcvMsg.installUser);
-            console.log('Hello ' + container.installUser);    
-            UserCount++;
-            return;
+            if(!isDuplicated) {
+                container.com = "Connect";
+                container.installUser = rcvMsg.installUser;
+                
+                client.send(JSON.stringify(container));
+                UserList.push(client);    
+                NameList.push(rcvMsg.installUser);
+                console.log('Hello ' + container.installUser);    
+                UserCount++;
+            }
         }
         
         console.log("================================================");
