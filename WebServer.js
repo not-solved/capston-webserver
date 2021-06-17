@@ -60,6 +60,7 @@ wss.on('connection', (client) => {
                 console.log('Hello ' + container.installUser);    
                 UserCount++;
             }
+            return;
         }
         
         console.log("================================================");
