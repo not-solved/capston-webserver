@@ -43,6 +43,7 @@ wss.on('connection', (client) => {
                 if(users == rcvMsg.installUser) {
                     container.com = "NameDuplicated";
                     client.send(JSON.stringify(container));
+                    console.log("Name Duplicated");
                     return;
                 }
             });
