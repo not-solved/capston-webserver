@@ -40,6 +40,17 @@ wss.on('connection', (client) => {
         if(rcvMsg.com == "InitialConnection") {
             //  이름 중복 검사  
             isDuplicated = false;
+            container = {
+                com : "",
+                bombCode : "",
+                bombID : "",
+                installUser : "",
+                latitude : 0,
+                longitude : 0,
+                InjectTime : "",
+                ExploseTime : ""
+            }
+
             NameList.forEach((users, index, array) => {
                 if(users == rcvMsg.installUser) {
                     container.com = "NameDuplicated";
@@ -51,13 +62,11 @@ wss.on('connection', (client) => {
 
             //  중복검사 통과 시 게임 화면으로 연결
             if(!isDuplicated) {
-                container.com = "Connect";
-                container.installUser = rcvMsg.installUser;
-                
+                container.com = "Connect"; 
                 client.send(JSON.stringify(container));
                 UserList.push(client);    
                 NameList.push(rcvMsg.installUser);
-                console.log('Hello ' + container.installUser);    
+                console.log('Hello ' + rcvMsg.installUser);    
                 UserCount++;
             }
             return;
