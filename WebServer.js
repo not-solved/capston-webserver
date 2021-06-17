@@ -2,6 +2,7 @@ var wsServer = require('ws');
 var wss = new wsServer.Server({port: 6010});
 
 var UserList = [];
+var NameList = [];
 var BombList = [];
 var container = {};
 UserCount = 0;
@@ -38,8 +39,8 @@ wss.on('connection', (client) => {
         rcvMsg = JSON.parse(message);
         if(rcvMsg.com == "InitialConnection") {
             //  이름 중복 검사  
-            UserList.forEach((users, index, array) => {
-                if(users[1] == rcvMsg.installUser) {
+            NameList.forEach((users, index, array) => {
+                if(users == rcvMsg.installUser) {
                     container.com = "NameDuplicated";
                     client.send(JSON.stringify(container));
                     return;
@@ -51,7 +52,8 @@ wss.on('connection', (client) => {
             container.installUser = rcvMsg.installUser;
             
             client.send(JSON.stringify(container));
-            UserList.push([ client, container.installUser ]);    
+            UserList.push(client);    
+            NameList.push(rcvMsg.installUser);
             console.log('Hello ' + container.installUser);    
             UserCount++;
             return;
@@ -135,7 +137,7 @@ wss.on('connection', (client) => {
             console.log("Explose longitude : " + rcvMsg.longitude);
             //  폭발 좌표를 유저들에게 전송
             UserList.forEach((user, index, array) => {
-                user[0].send(JSON.stringify(container));
+                user.send(JSON.stringify(container));
             });
 
             //  폭발한 폭탄 리스트에서 제거
@@ -157,7 +159,7 @@ wss.on('connection', (client) => {
                     container = BombList[i];
                     container.com = "remove";
                     UserList.forEach((users, index, array) => {
-                        users[0].send(JSON.stringify(container));
+                        users.send(JSON.stringify(container));
                     });
                     console.log("Target Bomb name : ", rcvMsg.bombID);
                     removeComplete = true;
@@ -186,9 +188,9 @@ wss.on('connection', (client) => {
             for(i = 0; i < UserList.length; i++) {
 
                 //  폭탄 주인에게 유저의 피격 정보를 전송
-                if(UserList[i][1] == rcvMsg.installUser) {
+                if(NameList[i] == rcvMsg.installUser) {
                     container.com = "attack";
-                    UserList[i][0].send(JSON.stringify(container));
+                    UserList[i].send(JSON.stringify(container));
                     break;
                 }
             }
@@ -200,13 +202,14 @@ wss.on('connection', (client) => {
         targetIdx = 0;
         ClientName = '';
         for(i = 0; i < UserList.length; i++) {
-            if(UserList[i][0] == client) {
+            if(UserList[i] == client) {
                 targetIdx = i;
-                ClientName = UserList[i][1];
+                ClientName = UserList[i];
                 break;
             }
         }
         UserList.splice(targetIdx, 1);
+        NameList.splice(targetIdx, 1);
 
         //  해당 폭탄의 정보를 모든 유저에게 전송한 후 리스트에서 제거
         for(i = BombList.length - 1; i >= 0; i--) {
