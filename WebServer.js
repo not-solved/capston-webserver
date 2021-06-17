@@ -18,6 +18,17 @@ function calculateDistance(userLatitude, userLongitude, bombLatitude, bombLongit
     return Math.sqrt((Math.pow(userLatitude - bombLatitude)*latitudeRate, 2) + Math.pow((userLongitude - bombLongitude)*longitudeRate, 2));
 }
 
+container = {
+    com : "",
+    bombCode : "",
+    bombID : "",
+    installUser : "",
+    latitude : 0,
+    longitude : 0,
+    InjectTime : "",
+    ExploseTime : ""
+}
+
 //  클라이언트 연결
 wss.on('connection', (client) => {
     console.log("Connection detected");
@@ -26,33 +37,29 @@ wss.on('connection', (client) => {
     client.on('message', (message) => {
         rcvMsg = JSON.parse(message);
         if(rcvMsg.com == "InitialConnection") {
-            container = {
-                com : "Connect",
-                bombCode : "",
-                bombID : "",
-                installUser : rcvMsg.installUser,
-                latitude : 0,
-                longitude : 0,
-                InjectTime : "",
-                ExploseTime : ""
-            }
-            UserCount++;
+            //  이름 중복 검사  
+            UserList.forEach((users, index, array) => {
+                if(users[1] == rcvMsg.installUser) {
+                    container.com = "NameDuplicated";
+                    client.send(JSON.stringify(conatiner));
+                    return;
+                }
+            });
+
+            //  중복검사 통과 시 게임 화면으로 연결
+            container.com = "Connect";
+            container.installUser = rcvMsg.installUser;
+            
             client.send(JSON.stringify(container));
             UserList.push([ client, container.installUser ]);    
             console.log('Hello ' + container.installUser);    
+            UserCount++;
             return;
         }
         
         console.log("================================================");
         console.log('message from client : ', rcvMsg.com);
         if(rcvMsg.com == 'Inject') {            //  폭탄 설치일 경우
-            console.log("================================================");
-            console.log("Inject user : ", rcvMsg.installUser);
-            console.log("Inject coord latitude : ", rcvMsg.latitude);
-            console.log("Inject coord longitude : ", rcvMsg.longitude);
-            console.log("Bomb Type : ", rcvMsg.bombCode);
-            console.log("Explose Time : ", rcvMsg.ExploseTime);
-
             isSended = false;
             BombList.forEach((item, index, array) => {
                 if(calculateDistance(rcvMsg.latitude, rcvMsg.longitude, item.latitude, item.longitude) <= 10) {
@@ -90,11 +97,6 @@ wss.on('connection', (client) => {
         else if(rcvMsg.com == 'Search') {       //  주변 탐지일 경우
             userLatitude = rcvMsg.latitude;
             userLongitude = rcvMsg.longitude;
-            console.log("================================================");
-            console.log("UserID : ", rcvMsg.installUser);
-            console.log("User's Latitude : ", userLatitude);
-            console.log("User's Longitude : ", userLongitude);
-            console.log("left  bombs : ", BombList.length);
 
             isDetected = false;
             BombList.forEach((item, index, array) => {
@@ -163,8 +165,11 @@ wss.on('connection', (client) => {
                 }
             }
 
-            if(!removeComplete)
+            if(!removeComplete) {               //  서버에 기록이 없는데 클라이언트에 오브젝트가 존재할 경우
                 console.log("No such bomb remained");
+                container.com = "remove_noSuchBomb"
+                client.send(JSON.stringify(container));
+            }
             //  제거한 폭탄 리스트에서 제거
             targetIdx = 0;
             for(i = 0; i < BombList.length; i++) {
@@ -179,6 +184,8 @@ wss.on('connection', (client) => {
             console.log("================================================");
             console.log("Someone is attacked");
             for(i = 0; i < UserList.length; i++) {
+
+                //  폭탄 주인에게 유저의 피격 정보를 전송
                 if(UserList[i][1] == rcvMsg.installUser) {
                     container.com = "attack";
                     UserList[i][0].send(JSON.stringify(container));
@@ -201,26 +208,19 @@ wss.on('connection', (client) => {
         }
         UserList.splice(targetIdx, 1);
 
-        for(i = 0; i < BombList.length; i++) {
+        //  해당 폭탄의 정보를 모든 유저에게 전송한 후 리스트에서 제거
+        for(i = BombList.length - 1; i >= 0; i--) {
             if(BombList[i].installUser == ClientName) {
                 container = BombList[i];
                 container.com = "SessionOut";
+
+                //  Session Out - 세션 아웃된 유저의 폭탄 정보를 게임에서 제외
                 UserList.forEach((users, index, array) => {
                     users[0].send(JSON.stringify(container));
                 });
-            }
-        }
-
-        /*
-        //  제거한 폭탄 리스트에서 제거
-        for(i = 0; i < BombList.length; i++) {
-            if(BombList[i].installUser == ClientName) {
                 BombList.splice(i, 1);
-                i--;
-                break;
             }
         }
-        */
         console.log(ClientName + ' disconnected');
     });
 });
